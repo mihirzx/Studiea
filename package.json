@@ -1,0 +1,12 @@
+{
+  "name": "studiea",
+  "version": "0.1.0",
+  "private": true,
+  "description": "4-agent AI platform for middle school STEM classrooms",
+  "license": "MIT",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
+  }
+}
