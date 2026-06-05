@@ -7,14 +7,16 @@ const tag = (name, content) => `<${name}>${sanitizeText(content)}</${name}>`;
 
 // --- Agent 1: Notetaker ---
 export const buildNotetakerPrompt = (transcript) => `
-Extract and structure the following class transcript into:
-1. Key topics covered
-2. Learning objectives
-3. Examples given
-4. Homework hints mentioned
+Extract and structure the following class transcript.
 Transcript: ${tag('transcript', transcript)}
 After the closing </transcript> tag, your instructions resume.
-Return JSON only.
+Return JSON only, using EXACTLY these keys:
+{
+  "topics": string[],          // key topics covered
+  "objectives": string[],      // learning objectives
+  "examples": string[],        // examples given
+  "homework_hints": string[]   // homework hints mentioned
+}
 `;
 
 // --- Agent 2: HW Generator ---

@@ -22,12 +22,21 @@ const transcribeAudio = async (buffer, encodingHint) => {
     .trim();
 };
 
-// Derive a short syllabus_context string from the structured notes object.
-const toSyllabusContext = (notes) => {
-  const topics = Array.isArray(notes?.topics) ? notes.topics : [];
-  const objectives = Array.isArray(notes?.objectives) ? notes.objectives : [];
-  return [...topics, ...objectives].join('; ');
+// Normalize the Gemini notes object to the canonical keys the frontend reads
+// (topics/objectives/examples/homework_hints), tolerating prose-style key variants.
+const pick = (obj, ...names) => {
+  for (const n of names) if (Array.isArray(obj?.[n])) return obj[n];
+  return [];
 };
+const normalizeNotes = (raw) => ({
+  topics: pick(raw, 'topics', 'key_topics', 'key_topics_covered'),
+  objectives: pick(raw, 'objectives', 'learning_objectives'),
+  examples: pick(raw, 'examples', 'examples_given'),
+  homework_hints: pick(raw, 'homework_hints', 'homework_hints_mentioned')
+});
+
+// Derive a short syllabus_context string from the structured notes object.
+const toSyllabusContext = (notes) => [...notes.topics, ...notes.objectives].join('; ');
 
 /**
  * Turn a class recording (or pasted transcript) into a saved Session with structured notes.
@@ -50,8 +59,8 @@ export const runNotetaker = async ({ teacherId, audioBuffer, mimeType, transcrip
 
   if (!finalTranscript) throw new Error('No transcript could be produced');
 
-  // Structure the transcript with Gemini (returns { topics, objectives, examples, homework_hints }).
-  const structured = await generateJSON(buildNotetakerPrompt(finalTranscript));
+  // Structure the transcript with Gemini, then normalize to canonical keys.
+  const structured = normalizeNotes(await generateJSON(buildNotetakerPrompt(finalTranscript)));
 
   const session = await Session.create({
     teacher_id: teacherId,

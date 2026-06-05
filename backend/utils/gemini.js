@@ -3,8 +3,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Default model is overridable via GEMINI_MODEL. The bible targets "Gemini Flash";
+// gemini-2.0-flash was retired, so the current stable Flash is gemini-2.5-flash.
+const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+
 export const getModel = (opts = {}) =>
-  genAI.getGenerativeModel({ model: 'gemini-2.0-flash', ...opts });
+  genAI.getGenerativeModel({ model: MODEL, ...opts });
 
 // Generate and parse a JSON response. Throws if the model returns non-JSON.
 export const generateJSON = async (prompt, opts = {}) => {
