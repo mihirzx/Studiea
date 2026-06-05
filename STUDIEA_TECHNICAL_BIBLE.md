@@ -5,7 +5,7 @@
 
 ## What is Studiea?
 
-A 4-agent AI platform for middle school STEM classrooms. Two actors: **Teacher**, **Student**. Four agents: **Notetaker**, **HW Generator**, **Grader**, **Study Buddy**. One database: **MongoDB Atlas**. Orchestrated by **Google Cloud Agent Builder** with **Gemini 2.0 Flash** as the LLM brain.
+A 4-agent AI platform for middle school STEM classrooms. Two actors: **Teacher**, **Student**. Four agents: **Notetaker**, **HW Generator**, **Grader**, **Study Buddy**. One database: **MongoDB Atlas**. Orchestrated by **Google Cloud Agent Builder** with **Gemini 2.0 Flash** as the LLM brain.vvvvvvvvvv
 
 ---
 
