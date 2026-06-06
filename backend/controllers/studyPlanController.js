@@ -2,6 +2,7 @@
 import StudyPlan from '../models/StudyPlan.js';
 import ChatMessage from '../models/ChatMessage.js';
 import Student from '../models/Student.js';
+import Assignment from '../models/Assignment.js';
 import { generateDailyPlan, chat as studyBuddyChat } from '../agents/studyBuddyAgent.js';
 
 // POST /study-plans/generate — internal secret only (called by the Grader).
@@ -46,12 +47,27 @@ export const getActivePlan = async (req, res, next) => {
 };
 
 // POST /study-plans/chat — student chats with Study Buddy.
+// Body: { message, mode?: 'learn'|'homework', assignment_id? }.
 export const chat = async (req, res, next) => {
   try {
     const message = (req.body?.message || '').toString();
     if (!message.trim()) return res.status(400).json({ error: 'message is required' });
-    const reply = await studyBuddyChat({ studentId: req.user.id, message });
-    return res.json({ message: reply });
+
+    const mode = req.body?.mode === 'homework' ? 'homework' : 'learn';
+
+    // If scoped to an assignment, it must belong to the student's own teacher.
+    let assignmentId;
+    if (req.body?.assignment_id) {
+      const assignment = await Assignment.findById(req.body.assignment_id).catch(() => null);
+      const student = await Student.findById(req.user.id);
+      if (!assignment || !student || String(assignment.teacher_id) !== String(student.teacher_id)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      assignmentId = String(assignment._id);
+    }
+
+    const reply = await studyBuddyChat({ studentId: req.user.id, message, mode, assignmentId });
+    return res.json({ message: reply, mode });
   } catch (err) {
     next(err);
   }

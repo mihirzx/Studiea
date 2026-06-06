@@ -15,6 +15,10 @@ const assignmentSchema = new mongoose.Schema({
   title: { type: String, required: true },
   subject: { type: String },
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
+  // Optional teacher directive on how the AI should teach/give feedback for this assignment.
+  // Obeyed by Study Buddy (homework guidance) and the Grader (feedback emphasis, not the score).
+  // Never exposed to students. Falls back to DEFAULT_TEACHING_DIRECTIVE when unset.
+  teaching_directive: { type: String },
   questions: [questionSchema],
   due_date: { type: Date },
   created_at: { type: Date, default: () => new Date() }

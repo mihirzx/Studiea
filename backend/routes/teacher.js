@@ -8,6 +8,7 @@ router.use(requireAuth, requireRole('teacher'));
 router.get('/:id', teacherController.getProfile);
 router.patch('/:id/threshold', teacherController.setThreshold);
 router.get('/:id/students', teacherController.listStudents);
+router.get('/:id/students/:student_id/stats', teacherController.getStudentStats);
 router.get('/:id/dashboard', teacherController.getDashboard);
 
 export default router;

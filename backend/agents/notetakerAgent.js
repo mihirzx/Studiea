@@ -41,10 +41,10 @@ const toSyllabusContext = (notes) => [...notes.topics, ...notes.objectives].join
 /**
  * Turn a class recording (or pasted transcript) into a saved Session with structured notes.
  *
- * @param {{ teacherId: string, audioBuffer?: Buffer, mimeType?: string, transcript?: string }} input
+ * @param {{ teacherId: string, audioBuffer?: Buffer, mimeType?: string, transcript?: string, recordedAt?: Date }} input
  * @returns {Promise<object>} the saved Session document
  */
-export const runNotetaker = async ({ teacherId, audioBuffer, mimeType, transcript }) => {
+export const runNotetaker = async ({ teacherId, audioBuffer, mimeType, transcript, recordedAt }) => {
   let finalTranscript = (transcript || '').trim();
   let audioUrl = null;
 
@@ -67,7 +67,8 @@ export const runNotetaker = async ({ teacherId, audioBuffer, mimeType, transcrip
     audio_url: audioUrl,
     transcript: finalTranscript,
     structured_notes: structured,
-    syllabus_context: toSyllabusContext(structured)
+    syllabus_context: toSyllabusContext(structured),
+    recorded_at: recordedAt || new Date() // calendar date for previous sessions; defaults to now
   });
 
   return session;

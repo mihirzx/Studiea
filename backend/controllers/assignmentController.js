@@ -18,9 +18,13 @@ const studentView = (a) => ({
 // POST /assignments/generate — trigger HW generation from session_id.
 export const generate = async (req, res, next) => {
   try {
-    const { session_id } = req.body;
+    const { session_id, teaching_directive } = req.body;
     if (!session_id) return res.status(400).json({ error: 'session_id is required' });
-    const assignment = await runHwGenerator({ sessionId: session_id, teacherId: req.user.id });
+    const assignment = await runHwGenerator({
+      sessionId: session_id,
+      teacherId: req.user.id,
+      teachingDirective: teaching_directive
+    });
     return res.status(201).json({ _id: String(assignment._id) });
   } catch (err) {
     next(err);
@@ -99,11 +103,12 @@ export const update = async (req, res, next) => {
     if (!a) return res.status(404).json({ error: 'Not found' });
     if (req.user.id !== String(a.teacher_id)) return res.status(403).json({ error: 'Forbidden' });
 
-    const { title, subject, difficulty, due_date, questions } = req.body;
+    const { title, subject, difficulty, due_date, questions, teaching_directive } = req.body;
     if (title !== undefined) a.title = title;
     if (subject !== undefined) a.subject = subject;
     if (difficulty !== undefined) a.difficulty = difficulty;
     if (due_date !== undefined) a.due_date = due_date;
+    if (teaching_directive !== undefined) a.teaching_directive = teaching_directive;
     if (Array.isArray(questions)) {
       a.questions = questions.map((q, i) => ({
         question_id: String(q.question_id || `q${i + 1}`),

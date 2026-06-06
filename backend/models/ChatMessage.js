@@ -7,6 +7,9 @@ const chatMessageSchema = new mongoose.Schema({
   student_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true, index: true },
   role: { type: String, enum: ['user', 'assistant'], required: true },
   content: { type: String, required: true },
+  // Which Study Buddy mode produced this turn, and the assignment it was scoped to (if any).
+  mode: { type: String, enum: ['learn', 'homework'], default: 'learn' },
+  assignment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' },
   timestamp: { type: Date, default: () => new Date() }
 });
 

@@ -22,7 +22,14 @@ export const upload = async (req, res, next) => {
       return res.status(400).json({ error: 'Provide an audio file or a transcript' });
     }
 
-    const session = await runNotetaker({ teacherId: req.user.id, audioBuffer, mimeType, transcript });
+    // Optional calendar date for backdated/previous sessions. Ignore if unparseable -> defaults to now.
+    let recordedAt;
+    if (req.body?.recorded_at) {
+      const d = new Date(req.body.recorded_at);
+      if (!isNaN(d.getTime())) recordedAt = d;
+    }
+
+    const session = await runNotetaker({ teacherId: req.user.id, audioBuffer, mimeType, transcript, recordedAt });
     return res.status(201).json({
       _id: String(session._id),
       recorded_at: session.recorded_at,

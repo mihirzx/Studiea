@@ -3,6 +3,7 @@
 import { generateJSON } from '../utils/gemini.js';
 import { buildGraderPrompt } from '../utils/promptBuilder.js';
 import { validateGrade } from '../utils/validateAgentOutput.js';
+import { DEFAULT_TEACHING_DIRECTIVE } from '../utils/constants.js';
 import Submission from '../models/Submission.js';
 import Assignment from '../models/Assignment.js';
 import Teacher from '../models/Teacher.js';
@@ -35,8 +36,10 @@ export const runGrader = async ({ submissionId }) => {
   if (!assignment) throw new Error('Assignment not found');
 
   // Steps 2-3: build the rubric-weighted prompt and grade with Gemini.
+  // The teacher's directive shapes feedback tone/emphasis only — never the score.
   const { rubric, studentAnswers } = buildRubricAndAnswers(assignment.questions, submission.answers);
-  const raw = await generateJSON(buildGraderPrompt(rubric, studentAnswers));
+  const directive = assignment.teaching_directive || DEFAULT_TEACHING_DIRECTIVE;
+  const raw = await generateJSON(buildGraderPrompt(rubric, studentAnswers, directive));
 
   // Step 4: validate the agent output before persisting.
   const { score, feedback, weak_areas } = validateGrade(raw);

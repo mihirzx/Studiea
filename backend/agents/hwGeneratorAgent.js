@@ -16,10 +16,10 @@ const notesToText = (notes) => {
 /**
  * Generate a STEM assignment from a class session and save it.
  *
- * @param {{ sessionId: string, teacherId: string }} input
+ * @param {{ sessionId: string, teacherId: string, teachingDirective?: string }} input
  * @returns {Promise<object>} the saved Assignment document
  */
-export const runHwGenerator = async ({ sessionId, teacherId }) => {
+export const runHwGenerator = async ({ sessionId, teacherId, teachingDirective }) => {
   const session = await Session.findById(sessionId);
   if (!session) throw new Error('Session not found');
 
@@ -32,7 +32,8 @@ export const runHwGenerator = async ({ sessionId, teacherId }) => {
     session_id: session._id,
     teacher_id: teacherId,
     title,
-    questions
+    questions,
+    ...(teachingDirective ? { teaching_directive: teachingDirective } : {})
     // subject + difficulty + due_date are set/edited by the teacher in AssignmentReview.
   });
 
