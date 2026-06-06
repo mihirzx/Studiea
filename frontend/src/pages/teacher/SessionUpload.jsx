@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BASE, authHeaders } from '../../api/client.js';
-import { apiFetch } from '../../api/client.js';
+import { Mic, Upload, FileAudio } from 'lucide-react';
+import { BASE, authHeaders, apiFetch } from '../../api/client.js';
 import { generateAssignment } from '../../api/assignments.js';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import PageHeader from '../../components/PageHeader.jsx';
@@ -68,7 +68,6 @@ function SessionUpload() {
         body: fd,
       });
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || 'Upload failed');
 
       setLastSessionId(data._id || data.session_id || data.id);
@@ -90,7 +89,7 @@ function SessionUpload() {
       const id = assignment._id || assignment.assignment_id || assignment.id;
       navigate(`/teacher/assignments/${id}`);
     } catch {
-      setUploadError('Assignment generation failed. You can try again from the dashboard.');
+      setUploadError('Assignment generation failed. Try again from the dashboard.');
       setModalOpen(false);
     } finally {
       setIsGenerating(false);
@@ -98,13 +97,12 @@ function SessionUpload() {
   }
 
   function formatBytes(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen p-6">
+    <div className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-2xl">
         <PageHeader
           title="Upload Class Session"
@@ -118,23 +116,32 @@ function SessionUpload() {
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 transition-colors ${
+            className={`flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed px-6 py-14 transition-colors ${
               isDragging
-                ? 'border-teacher-600 bg-teacher-50'
-                : 'border-slate-300 bg-white hover:border-slate-400'
+                ? 'border-teacher-700 bg-teacher-50'
+                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50'
             }`}
           >
-            <span className="text-4xl" role="img" aria-hidden="true">🎙️</span>
             {file ? (
-              <div className="text-center">
-                <p className="font-semibold text-slate-800">{file.name}</p>
-                <p className="text-sm text-slate-500">{formatBytes(file.size)}</p>
-              </div>
+              <>
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teacher-50">
+                  <FileAudio className="h-7 w-7 text-teacher-700" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-800">{file.name}</p>
+                  <p className="text-sm text-gray-400">{formatBytes(file.size)}</p>
+                </div>
+              </>
             ) : (
-              <div className="text-center">
-                <p className="font-medium text-slate-700">Drag & drop your audio file here</p>
-                <p className="text-sm text-slate-400">or click to browse</p>
-              </div>
+              <>
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                  <Mic className="h-7 w-7 text-gray-400" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-700">Drag & drop your audio file here</p>
+                  <p className="mt-1 text-sm text-gray-400">or click to browse — MP3, WAV, M4A supported</p>
+                </div>
+              </>
             )}
             <input
               id="audio-upload"
@@ -146,47 +153,53 @@ function SessionUpload() {
             />
           </label>
 
-          {uploadError && <p className="mt-3 text-sm text-red-600">{uploadError}</p>}
+          {uploadError && (
+            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+              {uploadError}
+            </p>
+          )}
 
           {isUploading ? (
             <div className="mt-4">
-              <LoadingSpinner label="Uploading and transcribing… this may take a minute" />
-              <p className="text-center text-sm text-slate-500">Uploading and transcribing… this may take a minute</p>
+              <LoadingSpinner label="Uploading and transcribing — this may take a minute" />
             </div>
           ) : (
             <button
               type="submit"
               disabled={!file}
-              className="mt-4 w-full rounded-lg bg-teacher-700 py-3 text-sm font-semibold text-white hover:bg-teacher-800 disabled:opacity-50"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teacher-700 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teacher-800 disabled:opacity-50"
             >
+              <Upload className="h-4 w-4" />
               Upload & Transcribe
             </button>
           )}
         </form>
 
-        {/* Past sessions */}
         <div className="mt-10">
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
             Past Sessions
           </h2>
           {sessionsLoading ? (
-            <LoadingSpinner size="sm" />
+            <LoadingSpinner size="sm" label="Loading sessions…" />
           ) : sessions.length === 0 ? (
-            <p className="text-sm text-slate-400">No sessions uploaded yet.</p>
+            <p className="text-sm text-gray-400">No sessions uploaded yet.</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {sessions.map((s) => (
                 <div
                   key={s._id}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-sm"
+                  className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm"
                 >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teacher-50">
+                    <FileAudio className="h-4 w-4 text-teacher-700" />
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-800">
+                    <p className="text-sm font-medium text-gray-800">
                       {s.recorded_at ? new Date(s.recorded_at).toLocaleString() : 'Session'}
                     </p>
                     {s.structured_notes?.topics?.length > 0 && (
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Topics: {s.structured_notes.topics.slice(0, 3).join(', ')}
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {s.structured_notes.topics.slice(0, 3).join(' · ')}
                       </p>
                     )}
                   </div>
@@ -200,26 +213,26 @@ function SessionUpload() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Session uploaded!"
+        title="Session uploaded"
         footer={
           <>
             <button
               onClick={() => setModalOpen(false)}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               Done
             </button>
             <button
               onClick={handleGenerateAssignment}
               disabled={isGenerating}
-              className="rounded-lg bg-teacher-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teacher-800 disabled:opacity-60"
+              className="rounded-lg bg-teacher-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teacher-800 disabled:opacity-60"
             >
               {isGenerating ? 'Generating…' : 'Generate Assignment'}
             </button>
           </>
         }
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-gray-600">
           Your session has been transcribed and saved. Would you like to generate a homework assignment from it now?
         </p>
       </Modal>

@@ -48,7 +48,7 @@ describe('AssignmentView — form validation', () => {
 
     renderView();
 
-    expect(await screen.findByText(/You already handed this in/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Already submitted/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Hand in/i })).not.toBeInTheDocument();
   });
 

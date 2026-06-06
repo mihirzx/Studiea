@@ -1,13 +1,13 @@
 function LoadingSpinner({ size = 'md', label = 'Loading…' }) {
-  const sizeClass = { sm: 'w-5 h-5', md: 'w-8 h-8', lg: 'w-12 h-12' }[size];
+  const sizeClass = { sm: 'h-5 w-5', md: 'h-8 w-8', lg: 'h-12 w-12' }[size];
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-8">
+    <div className="flex flex-col items-center justify-center gap-3 py-12">
       <div
-        className={`${sizeClass} animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600`}
+        className={`${sizeClass} animate-spin rounded-full border-4 border-gray-200 border-t-teacher-700`}
         role="status"
       />
-      <span className="sr-only">{label}</span>
+      <p className="text-sm text-gray-400">{label}</p>
     </div>
   );
 }

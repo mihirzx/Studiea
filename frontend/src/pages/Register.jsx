@@ -14,8 +14,8 @@ function Register() {
   const [error, setError] = useState('');
 
   function validate() {
-    if (!name.trim()) return 'Name is required.';
-    if (!email.trim()) return 'Email is required.';
+    if (!name.trim()) return 'Full name is required.';
+    if (!email.trim()) return 'Email address is required.';
     if (password.length < 8) return 'Password must be at least 8 characters.';
     if (role === 'student' && !teacherId.trim()) return "Your teacher's ID is required.";
     return null;
@@ -41,81 +41,116 @@ function Register() {
   }
 
   return (
-    <div className="mx-auto max-w-sm">
-      <h1 className="mb-4 text-2xl font-bold">Create your Studiea account</h1>
+    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-slate-50 px-4 py-8">
+      <div className="w-full max-w-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-lg">
+          <div className="mb-7 text-center">
+            <h1 className="text-2xl font-bold text-teacher-700">Studiea</h1>
+            <p className="mt-1 text-sm text-gray-500">Create your account</p>
+          </div>
 
-      <div className="mb-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => setRole('teacher')}
-          className={`flex-1 rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${
-            role === 'teacher'
-              ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-              : 'border-gray-200 text-gray-500 hover:border-gray-300'
-          }`}
-        >
-          I'm a Teacher
-        </button>
-        <button
-          type="button"
-          onClick={() => setRole('student')}
-          className={`flex-1 rounded-lg border-2 py-3 text-sm font-semibold transition-colors ${
-            role === 'student'
-              ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-              : 'border-gray-200 text-gray-500 hover:border-gray-300'
-          }`}
-        >
-          I'm a Student
-        </button>
+          <div className="mb-5 grid grid-cols-2 gap-2">
+            {['teacher', 'student'].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                className={`rounded-lg border-2 py-2.5 text-sm font-semibold transition-colors ${
+                  role === r
+                    ? 'border-teacher-700 bg-teacher-50 text-teacher-700'
+                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                }`}
+              >
+                {r === 'teacher' ? 'I\'m a Teacher' : 'I\'m a Student'}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
+                Full name
+              </label>
+              <input
+                id="name"
+                type="text"
+                autoComplete="name"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-teacher-700 focus:outline-none focus:ring-2 focus:ring-teacher-700/20"
+                placeholder="Your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-teacher-700 focus:outline-none focus:ring-2 focus:ring-teacher-700/20"
+                placeholder="you@school.edu"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-teacher-700 focus:outline-none focus:ring-2 focus:ring-teacher-700/20"
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            {role === 'student' && (
+              <div>
+                <label htmlFor="teacherId" className="mb-1.5 block text-sm font-medium text-gray-700">
+                  Teacher ID
+                </label>
+                <input
+                  id="teacherId"
+                  type="text"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-teacher-700 focus:outline-none focus:ring-2 focus:ring-teacher-700/20"
+                  placeholder="Your teacher will provide this"
+                  value={teacherId}
+                  onChange={(e) => setTeacherId(e.target.value)}
+                />
+              </div>
+            )}
+
+            {error && (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full rounded-lg bg-teacher-700 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teacher-800 disabled:opacity-60"
+            >
+              {isLoading ? 'Creating account…' : 'Create account'}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-sm text-gray-500">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-teacher-700 hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          className="w-full rounded border p-2"
-          type="text"
-          placeholder="Full name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          className="w-full rounded border p-2"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="w-full rounded border p-2"
-          type="password"
-          placeholder="Password (min. 8 characters)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {role === 'student' && (
-          <input
-            className="w-full rounded border p-2"
-            type="text"
-            placeholder="Your teacher's ID"
-            value={teacherId}
-            onChange={(e) => setTeacherId(e.target.value)}
-          />
-        )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          className="w-full rounded bg-indigo-600 py-2 text-white disabled:opacity-60"
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Creating account…' : 'Create account'}
-        </button>
-      </form>
-
-      <p className="mt-4 text-center text-sm text-gray-500">
-        Already have an account?{' '}
-        <Link to="/login" className="text-indigo-600 hover:underline">
-          Log in
-        </Link>
-      </p>
     </div>
   );
 }

@@ -75,7 +75,7 @@ describe('StudentDashboard — routing-critical', () => {
 
     renderDashboard();
 
-    expect(await screen.findByText(/Your teacher is reviewing/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Under review/i)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /View Feedback/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Start Assignment/i })).not.toBeInTheDocument();
   });

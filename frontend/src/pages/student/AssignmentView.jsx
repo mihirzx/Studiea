@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { CheckCircle2, Send } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { getAssignment } from '../../api/assignments.js';
 import { submitAnswers, listStudentSubmissions } from '../../api/submissions.js';
@@ -28,11 +29,8 @@ function AssignmentView() {
         ]);
         if (cancelled) return;
         setAssignment(assnData);
-
-        const existingSubmission = Array.isArray(subList)
-          ? subList.find((s) => s.assignment_id === id)
-          : null;
-        setAlreadySubmitted(!!existingSubmission);
+        const existing = Array.isArray(subList) ? subList.find((s) => s.assignment_id === id) : null;
+        setAlreadySubmitted(!!existing);
       } catch {
         if (!cancelled) setError('Failed to load the assignment. Try refreshing.');
       } finally {
@@ -49,15 +47,11 @@ function AssignmentView() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-
-    const allAnswered = assignment.questions.every(
-      (q) => answers[q.question_id]?.trim()
-    );
+    const allAnswered = assignment.questions.every((q) => answers[q.question_id]?.trim());
     if (!allAnswered) {
       setError('Please answer all questions before handing in.');
       return;
     }
-
     setIsSubmitting(true);
     try {
       const formattedAnswers = assignment.questions.map((q) => ({
@@ -67,27 +61,29 @@ function AssignmentView() {
       await submitAnswers(id, formattedAnswers);
       setHasSubmitted(true);
     } catch {
-      setError('Something went wrong submitting your answers. Please try again.');
+      setError('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   }
 
   if (isLoading) return <LoadingSpinner />;
-  if (error && !assignment) return <p className="text-sm text-red-600">{error}</p>;
+  if (error && !assignment) return <p className="p-6 text-sm text-red-600">{error}</p>;
 
   if (alreadySubmitted) {
     return (
-      <div className="min-h-screen bg-purple-50 p-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="mt-12 text-5xl">📬</p>
-          <h2 className="mt-4 text-xl font-bold text-violet-900">You already handed this in!</h2>
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="mx-auto max-w-md py-20 text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+            <CheckCircle2 className="h-8 w-8 text-amber-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Already submitted</h2>
           <p className="mt-2 text-sm text-gray-500">
-            Your teacher is reviewing your answers. You'll see your feedback once it's ready.
+            Your teacher is reviewing your answers. Check back soon to see your feedback.
           </p>
           <Link
             to="/student"
-            className="mt-6 inline-block rounded-lg bg-student-500 px-5 py-3 text-sm font-semibold text-white hover:bg-student-600"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-student-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-student-600"
           >
             Back to Dashboard
           </Link>
@@ -98,16 +94,18 @@ function AssignmentView() {
 
   if (hasSubmitted) {
     return (
-      <div className="min-h-screen bg-purple-50 p-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="mt-12 text-6xl">🎉</p>
-          <h2 className="mt-4 text-2xl font-bold text-violet-900">Your answers are in!</h2>
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="mx-auto max-w-md py-20 text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">Your answers are in!</h2>
           <p className="mt-2 text-sm text-gray-500">
             Your teacher will review them and you'll see your feedback soon.
           </p>
           <Link
             to="/student"
-            className="mt-6 inline-block rounded-lg bg-student-500 px-5 py-3 text-sm font-semibold text-white hover:bg-student-600"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-student-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-student-600"
           >
             Back to Dashboard
           </Link>
@@ -117,31 +115,26 @@ function AssignmentView() {
   }
 
   const questions = assignment?.questions ?? [];
-  const totalQuestions = questions.length;
 
   return (
-    <div className="min-h-screen bg-purple-50 p-6">
+    <div className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-2xl">
         <PageHeader
           title={assignment.title || 'Assignment'}
-          subtitle={assignment.subject}
+          subtitle={`${assignment.subject || ''} · ${questions.length} question${questions.length !== 1 ? 's' : ''}`}
           variant="student"
         />
 
-        <p className="mb-6 text-sm font-medium text-violet-600">
-          {totalQuestions} question{totalQuestions !== 1 ? 's' : ''} — take your time!
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {questions.map((q, i) => (
-            <div key={q.question_id || i} className="rounded-2xl border border-purple-100 bg-white p-5 shadow-sm">
-              <p className="mb-1 text-xs font-bold uppercase tracking-wide text-violet-400">
-                Question {i + 1} of {totalQuestions}
+            <div key={q.question_id || i} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400">
+                Question {i + 1} of {questions.length}
               </p>
-              <p className="mb-3 text-sm font-medium text-slate-800">{q.prompt}</p>
+              <p className="mb-3 text-sm font-medium text-gray-800">{q.prompt}</p>
               <textarea
                 rows={4}
-                className="w-full resize-none rounded-lg border border-purple-200 p-3 text-sm text-slate-800 placeholder-gray-300 focus:border-student-500 focus:outline-none"
+                className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:border-student-500 focus:outline-none focus:ring-2 focus:ring-student-500/20"
                 placeholder="Write your answer here…"
                 value={answers[q.question_id] || ''}
                 onChange={(e) => handleAnswerChange(q.question_id, e.target.value)}
@@ -149,14 +142,19 @@ function AssignmentView() {
             </div>
           ))}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <p className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700 ring-1 ring-red-200">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-student-500 py-4 text-base font-bold text-white hover:bg-student-600 disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-student-500 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-student-600 disabled:opacity-60"
           >
-            {isSubmitting ? 'Handing in…' : 'Hand in Assignment ✓'}
+            <Send className="h-4 w-4" />
+            {isSubmitting ? 'Handing in…' : 'Hand in Assignment'}
           </button>
         </form>
       </div>
