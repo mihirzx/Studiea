@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -16,36 +16,49 @@ import AssignmentView from './pages/student/AssignmentView.jsx';
 import Feedback from './pages/student/Feedback.jsx';
 import StudyBuddy from './pages/student/StudyBuddy.jsx';
 
-export default function App() {
+// In-app chrome: navbar + constrained content area. Auth pages opt out of this
+// to render their own full-bleed, navbar-less landing.
+function AppLayout() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar />
       <main className="mx-auto max-w-5xl p-4">
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* Teacher */}
-          <Route element={<ProtectedRoute role="teacher" />}>
-            <Route path="/teacher" element={<TeacherDashboard />} />
-            <Route path="/teacher/upload" element={<SessionUpload />} />
-            <Route path="/teacher/assignments/:id" element={<AssignmentReview />} />
-            <Route path="/teacher/alerts" element={<PendingAlerts />} />
-            <Route path="/teacher/students/:id" element={<StudentProfile />} />
-          </Route>
-
-          {/* Student */}
-          <Route element={<ProtectedRoute role="student" />}>
-            <Route path="/student" element={<StudentDashboard />} />
-            <Route path="/student/assignments/:id" element={<AssignmentView />} />
-            <Route path="/student/feedback/:id" element={<Feedback />} />
-            <Route path="/student/study-buddy" element={<StudyBuddy />} />
-          </Route>
-
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <Outlet />
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      {/* Auth landing — full-bleed, no navbar */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Everything else runs inside the app chrome */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* Teacher */}
+        <Route element={<ProtectedRoute role="teacher" />}>
+          <Route path="/teacher" element={<TeacherDashboard />} />
+          <Route path="/teacher/upload" element={<SessionUpload />} />
+          <Route path="/teacher/assignments/:id" element={<AssignmentReview />} />
+          <Route path="/teacher/alerts" element={<PendingAlerts />} />
+          <Route path="/teacher/students/:id" element={<StudentProfile />} />
+        </Route>
+
+        {/* Student */}
+        <Route element={<ProtectedRoute role="student" />}>
+          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student/assignments/:id" element={<AssignmentView />} />
+          <Route path="/student/feedback/:id" element={<Feedback />} />
+          <Route path="/student/study-buddy" element={<StudyBuddy />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Route>
+    </Routes>
   );
 }

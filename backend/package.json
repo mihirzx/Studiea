@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "seed:session": "node scripts/insert-session.js"
   },
   "dependencies": {
     "@google-cloud/speech": "^6.7.0",

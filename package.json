@@ -1,5 +1,6 @@
 {
   "name": "studiea",
+  "type": "module",
   "version": "0.1.0",
   "private": true,
   "description": "4-agent AI platform for middle school STEM classrooms",
@@ -7,6 +8,8 @@
   "scripts": {
     "install:all": "npm --prefix backend install && npm --prefix frontend install",
     "dev:backend": "npm --prefix backend run dev",
-    "dev:frontend": "npm --prefix frontend run dev"
+    "dev:frontend": "npm --prefix frontend run dev",
+    "seed": "npm --prefix backend run seed",
+    "seed:session": "npm --prefix backend run seed:session"
   }
 }
