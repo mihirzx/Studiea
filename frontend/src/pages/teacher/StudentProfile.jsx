@@ -10,11 +10,14 @@ import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 import AlertBadge from '../../components/AlertBadge.jsx';
 import ScoreChart from '../../components/ScoreChart.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
+import MasteryBadge from '../../components/MasteryBadge.jsx';
+import { listStudentBadges, awardBadge, removeBadge } from '../../api/badges.js';
+
 
 const TREND_CONFIG = {
-  improving: { label: 'Improving', Icon: TrendingUp,   className: 'text-green-700 bg-green-50 ring-1 ring-green-200 dark:text-green-300 dark:bg-green-950/40 dark:ring-green-900' },
+  improving: { label: 'Improving', Icon: TrendingUp, className: 'text-green-700 bg-green-50 ring-1 ring-green-200 dark:text-green-300 dark:bg-green-950/40 dark:ring-green-900' },
   declining: { label: 'Declining', Icon: TrendingDown, className: 'text-red-700 bg-red-50 ring-1 ring-red-200 dark:text-red-300 dark:bg-red-950/40 dark:ring-red-900' },
-  stable:    { label: 'Stable',    Icon: Minus,        className: 'text-gray-600 bg-gray-100 ring-1 ring-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:ring-slate-700' },
+  stable: { label: 'Stable', Icon: Minus, className: 'text-gray-600 bg-gray-100 ring-1 ring-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:ring-slate-700' },
 };
 
 const EMPTY_FILTERS = { from: '', to: '', assignment_id: '' };
@@ -44,6 +47,10 @@ function StudentProfile() {
   const [topicQuery, setTopicQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [badges, setBadges] = useState([]);
+  const [topic, setTopic] = useState('');
+  const [customLabel, setCustomLabel] = useState('');
+
 
   // Assignments (for the filter dropdown) + active plan — fetched once.
   useEffect(() => {
@@ -77,8 +84,35 @@ function StudentProfile() {
     return () => { cancelled = true; };
   }, [user.id, id, filters]);
 
+  // The badge stuffs
+  useEffect(() => {
+    let cancelled = false;
+    listStudentBadges(id).then((data) => { if (!cancelled) setBadges(data) });
+    return () => { cancelled = true; };
+  }, [id])
+
+ 
+
+
   function setFilter(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  // Award a badge: build the label (custom text wins, else "Mastered: <topic>"),
+  // save it, then optimistically prepend it to the list and reset the form.
+  async function handleAward(e) {
+    e.preventDefault();
+    const finalLabel = customLabel.trim() || (topic ? `Mastered: ${topic}` : '');
+    if (!finalLabel) return;
+    const badge = await awardBadge(id, { label: finalLabel, topic: topic || null });
+    setBadges((prev) => [badge, ...prev]);
+    setTopic('');
+    setCustomLabel('');
+  }
+
+  async function handleRemove(badgeId) {
+    await removeBadge(id, badgeId);
+    setBadges((prev) => prev.filter((b) => b.id !== badgeId));
   }
 
   if (isLoading && !stats) return <LoadingSpinner />;
@@ -224,6 +258,35 @@ function StudentProfile() {
             <p className="mt-3 text-xs italic text-gray-400 dark:text-slate-500">Chat history is private to the student.</p>
           </div>
         )}
+
+        <div className="mb-5 rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">Achievements</h2>
+
+          <div className="mb-4 flex flex-wrap gap-2">
+            {badges.length === 0
+              ? <p className="text-sm text-gray-400 dark:text-slate-500">No badges yet.</p>
+              : badges.map((b) => (
+                <MasteryBadge key={b.id} label={b.label} topic={b.topic} awardedAt={b.awarded_at}
+                  onRemove={() => handleRemove(b.id)} />
+              ))}
+          </div>
+
+          <form onSubmit={handleAward} className="flex flex-wrap items-center gap-2">
+            <select value={topic} onChange={(e) => setTopic(e.target.value)}
+              className="rounded-lg border border-gray-200 px-2.5 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <option value="">Pick a topic…</option>
+              {(stats.topic_mastery || []).map((t) => (
+                <option key={t.topic} value={t.topic}>{t.topic}</option>
+              ))}
+            </select>
+            <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} placeholder="…or a custom label"
+              className="rounded-lg border border-gray-200 px-2.5 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+            <button type="submit" className="rounded-lg bg-teacher-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teacher-800">
+              Award
+            </button>
+          </form>
+        </div>
+
 
         <div className="rounded-xl border border-gray-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="border-b border-gray-50 px-5 py-4 dark:border-slate-800">

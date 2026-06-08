@@ -11,6 +11,8 @@ import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 import EmptyState from '../../components/EmptyState.jsx';
 import ScoreChart from '../../components/ScoreChart.jsx';
 import CornerDecor from '../../components/CornerDecor.jsx';
+import MasteryBadge from '../../components/MasteryBadge.jsx'
+import { listStudentBadges } from '../../api/badges.js';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -34,6 +36,7 @@ function StudentDashboard() {
   const [plan, setPlan] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [badges, setBadges] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,6 +59,14 @@ function StudentDashboard() {
         if (!cancelled) setIsLoading(false);
       }
     })();
+    return () => { cancelled = true; };
+  }, [user.id]);
+
+  useEffect(() => {
+    let cancelled = false; 
+    listStudentBadges(user.id).then((data) => {
+      if (!cancelled) setBadges(data);
+    });
     return () => { cancelled = true; };
   }, [user.id]);
 
@@ -167,6 +178,29 @@ function StudentDashboard() {
                 </Link>
               </div>
             )}
+
+            {/* <div className="flex flex-wrap gap-2">
+              {badges.length === 0
+                ? <p className="text-sm text-gray-400 dark:text-slate-500">No badges yet.</p>
+                : badges.map((b) => (
+                  <MasteryBadge key={b.id} label={b.label} topic={b.topic} awardedAt={b.awarded_at}
+                    onRemove={() => handleRemove(b.id)} />
+                ))}
+            </div> */}
+            
+            <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+                Your Badges
+              </h2>
+              
+              {badges.length === 0 ? (
+                <p className = "text-sm text-gray-400 dark:text-slate-500">No badges yet, keep going!</p>) : (
+                  <div className="flex flex-wrap gap-2">
+                    {badges.map((b) => <MasteryBadge key={b.id} label={b.label} topic={b.topic} awardedAt={b.awarded_at}/>)}
+                  </div>
+                )}
+                
+            </div>
           </div>
         </div>
       </div>
