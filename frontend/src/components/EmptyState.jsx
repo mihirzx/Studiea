@@ -2,12 +2,12 @@ function EmptyState({ icon: Icon, title, description, action }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
       {Icon && (
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-          <Icon className="h-7 w-7 text-gray-400" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800">
+          <Icon className="h-7 w-7 text-gray-400 dark:text-slate-500" />
         </div>
       )}
-      <h3 className="text-base font-semibold text-gray-800">{title}</h3>
-      {description && <p className="max-w-sm text-sm text-gray-500">{description}</p>}
+      <h3 className="text-base font-semibold text-gray-800 dark:text-slate-200">{title}</h3>
+      {description && <p className="max-w-sm text-sm text-gray-500 dark:text-slate-400">{description}</p>}
       {action && (
         <button
           onClick={action.onClick}

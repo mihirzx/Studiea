@@ -4,7 +4,7 @@ export default function ChatBubble({ role, content }) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} my-1`}>
       <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-        isUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-900'
+        isUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-900 dark:bg-slate-800 dark:text-slate-100'
       }`}>
         {content}
       </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import AuthLayout, { authInputClass, authButtonClass } from '../components/AuthLayout.jsx';
+import Logo from '../components/Logo.jsx';
 
 function Login() {
   const { login } = useAuth();
@@ -31,21 +32,21 @@ function Login() {
 
   return (
     <AuthLayout>
-      <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-card">
-        <div className="mb-7 text-center">
-          <h1 className="text-2xl font-bold text-teacher-700">Studiea</h1>
-          <p className="mt-1 text-sm text-gray-500">AI-Powered Classroom Platform</p>
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-card dark:border-slate-800 dark:bg-slate-900">
+        <div className="mb-7 flex flex-col items-center text-center">
+          <Logo variant="teacher" size="lg" />
+          <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">AI-Powered Classroom Platform</p>
         </div>
 
         {justRegistered && (
-          <div className="mb-5 rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700 ring-1 ring-green-200">
+          <div className="mb-5 rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700 ring-1 ring-green-200 dark:bg-green-950/40 dark:text-green-300 dark:ring-green-900">
             Account created — sign in to get started.
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Email address
             </label>
             <input
@@ -61,7 +62,7 @@ function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Password
             </label>
             <input
@@ -77,7 +78,7 @@ function Login() {
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900">
               {error}
             </p>
           )}
@@ -87,9 +88,9 @@ function Login() {
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
           Don't have an account?{' '}
-          <Link to="/register" className="font-medium text-teacher-700 hover:underline">
+          <Link to="/register" className="font-medium text-teacher-700 hover:underline dark:text-teacher-300">
             Sign up
           </Link>
         </p>

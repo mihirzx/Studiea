@@ -71,8 +71,8 @@ function FloatingAgent({ agent }) {
           }}
         />
         <div className="pointer-events-none absolute top-full mt-3 whitespace-nowrap text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <p className="text-sm font-semibold text-gray-800">{agent.name}</p>
-          <p className="text-xs text-gray-400">{agent.role}</p>
+          <p className="text-sm font-semibold text-gray-800 dark:text-slate-100">{agent.name}</p>
+          <p className="text-xs text-gray-400 dark:text-slate-400">{agent.role}</p>
         </div>
       </div>
     </div>
@@ -83,10 +83,10 @@ function AgentShowcase() {
   return (
     <div className="relative h-full w-full overflow-hidden" aria-hidden="true">
       <div className="absolute inset-x-0 top-[14%] z-10 px-12 text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-800">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-slate-100">
           Four AI agents. One classroom.
         </h2>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-gray-400">
+        <p className="mx-auto mt-2 max-w-sm text-sm text-gray-400 dark:text-slate-400">
           Studiea turns each lesson into assignments, feedback, and a personal tutor —
           automatically.
         </p>

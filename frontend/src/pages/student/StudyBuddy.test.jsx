@@ -9,11 +9,15 @@ vi.mock('../../api/studyPlans.js', () => ({
   getChatHistory: vi.fn(),
   getActivePlan: vi.fn(),
 }));
+vi.mock('../../api/assignments.js', () => ({
+  listStudentAssignments: vi.fn(),
+}));
 vi.mock('../../contexts/AuthContext.jsx', () => ({
   useAuth: () => ({ user: { id: 'student-1', name: 'Alex' } }),
 }));
 
 import { chat, getChatHistory, getActivePlan } from '../../api/studyPlans.js';
+import { listStudentAssignments } from '../../api/assignments.js';
 
 function renderStudyBuddy() {
   return render(
@@ -27,6 +31,7 @@ describe('StudyBuddy — chat behavior', () => {
   beforeEach(() => {
     getChatHistory.mockResolvedValue([]);
     getActivePlan.mockResolvedValue(null);
+    listStudentAssignments.mockResolvedValue([]);
   });
 
   it('shows empty state when no chat history exists', async () => {
@@ -85,5 +90,55 @@ describe('StudyBuddy — chat behavior', () => {
     // Type new text so the input is non-empty — button re-enables after isSending clears
     await userEvent.type(textarea, 'follow up');
     expect(screen.getByRole('button', { name: /Send/i })).not.toBeDisabled();
+  });
+
+  it('sends mode "learn" by default with no assignment', async () => {
+    chat.mockResolvedValue({ message: 'ok' });
+
+    renderStudyBuddy();
+    await screen.findByText(/Your Study Buddy is ready/i);
+
+    await userEvent.type(screen.getByPlaceholderText(/Ask your Study Buddy/i), 'hi');
+    await userEvent.click(screen.getByRole('button', { name: /Send/i }));
+
+    await waitFor(() => expect(chat).toHaveBeenCalled());
+    expect(chat).toHaveBeenCalledWith('hi', { mode: 'learn', assignmentId: undefined });
+  });
+});
+
+describe('StudyBuddy — homework mode', () => {
+  beforeEach(() => {
+    getChatHistory.mockResolvedValue([]);
+    getActivePlan.mockResolvedValue(null);
+    listStudentAssignments.mockResolvedValue([{ _id: 'a1', title: 'Physics Quiz' }]);
+  });
+
+  it('shows the assignment picker only in homework mode', async () => {
+    renderStudyBuddy();
+    await screen.findByText(/Your Study Buddy is ready/i);
+
+    // Not visible in learn mode
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Homework Help/i }));
+
+    expect(await screen.findByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByText(/I won't hand over the answers/i)).toBeInTheDocument();
+  });
+
+  it('sends mode "homework" with the selected assignment_id', async () => {
+    chat.mockResolvedValue({ message: 'Let us think it through.' });
+
+    renderStudyBuddy();
+    await screen.findByText(/Your Study Buddy is ready/i);
+
+    await userEvent.click(screen.getByRole('button', { name: /Homework Help/i }));
+    await userEvent.selectOptions(await screen.findByRole('combobox'), 'a1');
+
+    await userEvent.type(screen.getByPlaceholderText(/Ask your Study Buddy/i), 'q1 help');
+    await userEvent.click(screen.getByRole('button', { name: /Send/i }));
+
+    await waitFor(() => expect(chat).toHaveBeenCalled());
+    expect(chat).toHaveBeenCalledWith('q1 help', { mode: 'homework', assignmentId: 'a1' });
   });
 });

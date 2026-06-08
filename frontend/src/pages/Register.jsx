@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth.js';
 import AuthLayout, { authInputClass, authButtonClass } from '../components/AuthLayout.jsx';
+import Logo from '../components/Logo.jsx';
 
 function Register() {
   const navigate = useNavigate();
@@ -43,10 +44,10 @@ function Register() {
 
   return (
     <AuthLayout>
-      <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-card">
-        <div className="mb-7 text-center">
-          <h1 className="text-2xl font-bold text-teacher-700">Studiea</h1>
-          <p className="mt-1 text-sm text-gray-500">Create your account</p>
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-card dark:border-slate-800 dark:bg-slate-900">
+        <div className="mb-7 flex flex-col items-center text-center">
+          <Logo variant="teacher" size="lg" />
+          <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">Create your account</p>
         </div>
 
         <div className="mb-5 grid grid-cols-2 gap-2">
@@ -57,8 +58,8 @@ function Register() {
               onClick={() => setRole(r)}
               className={`rounded-lg border-2 py-2.5 text-sm font-semibold transition-colors ${
                 role === r
-                  ? 'border-teacher-700 bg-teacher-50 text-teacher-700'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                  ? 'border-teacher-700 bg-teacher-50 text-teacher-700 dark:border-teacher-500 dark:bg-teacher-900/30 dark:text-teacher-200'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-300 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600'
               }`}
             >
               {r === 'teacher' ? 'I\'m a Teacher' : 'I\'m a Student'}
@@ -68,7 +69,7 @@ function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Full name
             </label>
             <input
@@ -83,7 +84,7 @@ function Register() {
           </div>
 
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Email address
             </label>
             <input
@@ -98,7 +99,7 @@ function Register() {
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Password
             </label>
             <input
@@ -114,7 +115,7 @@ function Register() {
 
           {role === 'student' && (
             <div>
-              <label htmlFor="teacherId" className="mb-1.5 block text-sm font-medium text-gray-700">
+              <label htmlFor="teacherId" className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">
                 Teacher ID
               </label>
               <input
@@ -129,7 +130,7 @@ function Register() {
           )}
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900">
               {error}
             </p>
           )}
@@ -139,9 +140,9 @@ function Register() {
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-gray-500">
+        <p className="mt-5 text-center text-sm text-gray-500 dark:text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-teacher-700 hover:underline">
+          <Link to="/login" className="font-medium text-teacher-700 hover:underline dark:text-teacher-300">
             Sign in
           </Link>
         </p>

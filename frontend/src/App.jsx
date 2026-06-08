@@ -9,6 +9,7 @@ import TeacherDashboard from './pages/teacher/TeacherDashboard.jsx';
 import SessionUpload from './pages/teacher/SessionUpload.jsx';
 import AssignmentReview from './pages/teacher/AssignmentReview.jsx';
 import PendingAlerts from './pages/teacher/PendingAlerts.jsx';
+import ClassRoster from './pages/teacher/ClassRoster.jsx';
 import StudentProfile from './pages/teacher/StudentProfile.jsx';
 
 import StudentDashboard from './pages/student/StudentDashboard.jsx';
@@ -20,7 +21,7 @@ import StudyBuddy from './pages/student/StudyBuddy.jsx';
 // to render their own full-bleed, navbar-less landing.
 function AppLayout() {
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-100">
       <Navbar />
       <main className="mx-auto max-w-5xl p-4">
         <Outlet />
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/teacher/upload" element={<SessionUpload />} />
           <Route path="/teacher/assignments/:id" element={<AssignmentReview />} />
           <Route path="/teacher/alerts" element={<PendingAlerts />} />
+          <Route path="/teacher/roster" element={<ClassRoster />} />
           <Route path="/teacher/students/:id" element={<StudentProfile />} />
         </Route>
 

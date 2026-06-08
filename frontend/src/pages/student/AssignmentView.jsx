@@ -6,6 +6,7 @@ import { getAssignment } from '../../api/assignments.js';
 import { submitAnswers, listStudentSubmissions } from '../../api/submissions.js';
 import PageHeader from '../../components/PageHeader.jsx';
 import LoadingSpinner from '../../components/LoadingSpinner.jsx';
+import CornerDecor from '../../components/CornerDecor.jsx';
 
 function AssignmentView() {
   const { id } = useParams();
@@ -68,17 +69,17 @@ function AssignmentView() {
   }
 
   if (isLoading) return <LoadingSpinner />;
-  if (error && !assignment) return <p className="p-6 text-sm text-red-600">{error}</p>;
+  if (error && !assignment) return <p className="p-6 text-sm text-red-600 dark:text-red-400">{error}</p>;
 
   if (alreadySubmitted) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="min-h-screen bg-slate-50 p-6 dark:bg-slate-950">
         <div className="mx-auto max-w-md py-20 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
-            <CheckCircle2 className="h-8 w-8 text-amber-600" />
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/40">
+            <CheckCircle2 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900">Already submitted</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">Already submitted</h2>
+          <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
             Your teacher is reviewing your answers. Check back soon to see your feedback.
           </p>
           <Link
@@ -94,13 +95,13 @@ function AssignmentView() {
 
   if (hasSubmitted) {
     return (
-      <div className="min-h-screen bg-slate-50 p-6">
+      <div className="min-h-screen bg-slate-50 p-6 dark:bg-slate-950">
         <div className="mx-auto max-w-md py-20 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/40">
+            <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900">Your answers are in!</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">Your answers are in!</h2>
+          <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
             Your teacher will review them and you'll see your feedback soon.
           </p>
           <Link
@@ -117,8 +118,9 @@ function AssignmentView() {
   const questions = assignment?.questions ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="mx-auto max-w-2xl">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 p-6 dark:bg-slate-950">
+      <CornerDecor />
+      <div className="mx-auto max-w-3xl">
         <PageHeader
           title={assignment.title || 'Assignment'}
           subtitle={`${assignment.subject || ''} · ${questions.length} question${questions.length !== 1 ? 's' : ''}`}
@@ -127,14 +129,14 @@ function AssignmentView() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {questions.map((q, i) => (
-            <div key={q.question_id || i} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400">
+            <div key={q.question_id || i} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400 dark:text-violet-400">
                 Question {i + 1} of {questions.length}
               </p>
-              <p className="mb-3 text-sm font-medium text-gray-800">{q.prompt}</p>
+              <p className="mb-3 text-sm font-medium text-gray-800 dark:text-slate-200">{q.prompt}</p>
               <textarea
                 rows={4}
-                className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:border-student-500 focus:outline-none focus:ring-2 focus:ring-student-500/20"
+                className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:border-student-500 focus:outline-none focus:ring-2 focus:ring-student-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-500"
                 placeholder="Write your answer here…"
                 value={answers[q.question_id] || ''}
                 onChange={(e) => handleAnswerChange(q.question_id, e.target.value)}
@@ -143,7 +145,7 @@ function AssignmentView() {
           ))}
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700 ring-1 ring-red-200">
+            <p className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900">
               {error}
             </p>
           )}

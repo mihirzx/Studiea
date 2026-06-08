@@ -118,3 +118,43 @@ describe('Feedback — approval guard (security-critical)', () => {
     expect(await screen.findByText(/Keep at it/i)).toBeInTheDocument();
   });
 });
+
+describe('Feedback — per-question verdict indicators', () => {
+  it('renders correct/partial/incorrect badges when answers carry a verdict', async () => {
+    getSubmission.mockResolvedValue({
+      _id: 'sub-1',
+      status: 'approved',
+      score: 80,
+      weak_areas: [],
+      answers: [
+        { question_id: 'q1', answer: 'a1', verdict: 'correct' },
+        { question_id: 'q2', answer: 'a2', verdict: 'partial' },
+        { question_id: 'q3', answer: 'a3', verdict: 'incorrect' },
+      ],
+    });
+
+    renderFeedback();
+
+    expect(await screen.findByText('Correct')).toBeInTheDocument();
+    expect(screen.getByText('Partial')).toBeInTheDocument();
+    expect(screen.getByText('Needs work')).toBeInTheDocument();
+  });
+
+  it('renders no verdict badges when answers have no verdict (graceful)', async () => {
+    getSubmission.mockResolvedValue({
+      _id: 'sub-1',
+      status: 'approved',
+      score: 80,
+      weak_areas: [],
+      answers: [{ question_id: 'q1', answer: 'a1' }],
+    });
+
+    renderFeedback();
+
+    // Answer still renders, but no verdict badge text appears
+    expect(await screen.findByText('a1')).toBeInTheDocument();
+    expect(screen.queryByText('Correct')).not.toBeInTheDocument();
+    expect(screen.queryByText('Partial')).not.toBeInTheDocument();
+    expect(screen.queryByText('Needs work')).not.toBeInTheDocument();
+  });
+});

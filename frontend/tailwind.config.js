@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -8,6 +9,9 @@ export default {
           50:  '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
           600: '#2563eb',
           700: '#1d4ed8',
           800: '#1e40af',
@@ -17,10 +21,13 @@ export default {
           50:  '#faf5ff',
           100: '#ede9fe',
           200: '#ddd6fe',
+          300: '#c4b5fd',
           400: '#a78bfa',
           500: '#8b5cf6',
           600: '#7c3aed',
           700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
         },
         accent: {
           teal:  '#14b8a6',
@@ -38,6 +45,12 @@ export default {
           'radial-gradient(at 100% 0%, rgba(241,245,249,0.70) 0, transparent 50%),' +
           'radial-gradient(at 100% 100%, rgba(237,233,254,0.50) 0, transparent 50%),' +
           'radial-gradient(at 0% 100%, rgba(219,234,254,0.35) 0, transparent 50%)',
+        // Dark counterpart: faint indigo/violet glow on a near-black slate base.
+        'mesh-dark':
+          'radial-gradient(at 0% 0%, rgba(49,46,129,0.35) 0, transparent 50%),' +
+          'radial-gradient(at 100% 0%, rgba(30,41,59,0.50) 0, transparent 50%),' +
+          'radial-gradient(at 100% 100%, rgba(76,29,149,0.30) 0, transparent 50%),' +
+          'radial-gradient(at 0% 100%, rgba(30,58,138,0.25) 0, transparent 50%)',
       },
       keyframes: {
         'float-1': {

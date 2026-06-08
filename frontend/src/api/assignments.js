@@ -1,7 +1,12 @@
 import { apiFetch } from './client.js';
 
-export const generateAssignment = (sessionId) =>
-  apiFetch('/assignments/generate', { method: 'POST', body: { session_id: sessionId } });
+// teachingDirective (optional) tells the AI how to teach/give feedback for this
+// assignment; omitted → backend falls back to its default directive.
+export const generateAssignment = (sessionId, teachingDirective) => {
+  const body = { session_id: sessionId };
+  if (teachingDirective?.trim()) body.teaching_directive = teachingDirective.trim();
+  return apiFetch('/assignments/generate', { method: 'POST', body });
+};
 
 export const getAssignment = (id) => apiFetch(`/assignments/${id}`);
 
